@@ -35,47 +35,57 @@ process.chdir(path.dirname(startFilePath));
 
 let child;
 
-function startPythonProcess(startFilePath) {
-    const commands = ['python', 'python3'];
-    let commandFound = false;
+function trySpawn(command, startFilePath) {
+    return new Promise((resolve, reject) => {
+        const process = spawn(command, [startFilePath], { windowsHide: os.platform() === 'win32' });
 
-    commands.forEach((command) => {
-        if (!commandFound) {
-            try {
-                // Try to spawn the Python process
-                child = spawn(command, [startFilePath], { windowsHide: os.platform() === 'win32' });
+        let commandNotFound = true;
 
-                // If the 'error' event is not triggered, command is found
-                child.on('error', (err) => {
-                    if (err.code === 'ENOENT') {
-                        logTerminalData(`${command} not found, trying next option...`);
-                    } else {
-                        logTerminalData(`Error starting Python process: ${err}`);
-                    }
-                });
-
-                child.stdout.on('data', (data) => {
-                    logTerminalData(data.toString());
-                });
-
-                child.stderr.on('data', (data) => {
-                    logTerminalData(data.toString());
-                });
-
-                child.on('close', (code) => {
-                    logTerminalData(`Process exited with code ${code}\r\n`);
-                });
-
-                commandFound = true;
-            } catch (error) {
-                logTerminalData(`Error trying to execute ${command}: ${error}`);
+        process.on('error', (err) => {
+            if (err.code === 'ENOENT') {
+                reject(`${command} not found`); // Reject if command not found
+            } else {
+                logTerminalData(`Error starting Python process with ${command}: ${err}`);
+                reject(err); // Reject on other errors
             }
-        }
-    });
+        });
 
-    if (!commandFound) {
-        logTerminalData("Failed to find a valid Python command ('python' or 'python3').\r\n");
+        process.stdout.on('data', (data) => {
+            if (commandNotFound) {
+                commandNotFound = false; // Data received, command exists
+                resolve(process); // Resolve
+            }
+            logTerminalData(data.toString());
+        });
+
+        process.stderr.on('data', (data) => {
+            logTerminalData(data.toString());
+        });
+
+        process.on('close', (code) => {
+            logTerminalData(`Process exited with code ${code}\r\n`);
+            if (commandNotFound) {
+                // If the process closes before any output, consider it a failure
+                reject(`Process with ${command} exited prematurely.`);
+            }
+        });
+    });
+}
+
+async function startPythonProcess(startFilePath) {
+    const commands = ['python', 'python3'];
+
+    for (const command of commands) {
+        try {
+            child = await trySpawn(command, startFilePath);
+            // console.log(`${command} command was successful.`);
+            return; // Exit the loop and function if successful
+        } catch (error) {
+            // console.log(error);
+        }
     }
+
+    logTerminalData("Failed to find a valid Python command ('python' or 'python3').\r\n");
 }
 
 document.getElementById('start').addEventListener('click', function () {
