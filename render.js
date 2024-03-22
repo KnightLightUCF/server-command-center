@@ -14,8 +14,8 @@ let terminal = new Terminal({
     windowsMode: os.platform() === 'win32', // Set based on the platform
     wordWrap: true, // Enable word wrapping
     cols: 100, // Set the width of the terminal (number of characters per line)
-  });
-  
+});
+
 terminal.open(document.getElementById('terminal-container'));
 
 let startFilePath;
@@ -35,58 +35,77 @@ process.chdir(path.dirname(startFilePath));
 
 let child;
 
-document.getElementById('start').addEventListener('click', function() {
-    child = spawn('python', [startFilePath], { windowsHide: os.platform() === 'win32' });
+function startPythonProcess(startFilePath) {
+    const commands = ['python', 'python3'];
+    let commandFound = false;
 
-    child.stdout.on('data', (data) => {
-        logTerminalData(data.toString());
+    commands.forEach((command) => {
+        if (!commandFound) {
+            try {
+                // Try to spawn the Python process
+                child = spawn(command, [startFilePath], { windowsHide: os.platform() === 'win32' });
+
+                // If the 'error' event is not triggered, command is found
+                child.on('error', (err) => {
+                    if (err.code === 'ENOENT') {
+                        logTerminalData(`${command} not found, trying next option...`);
+                    } else {
+                        logTerminalData(`Error starting Python process: ${err}`);
+                    }
+                });
+
+                child.stdout.on('data', (data) => {
+                    logTerminalData(data.toString());
+                });
+
+                child.stderr.on('data', (data) => {
+                    logTerminalData(data.toString());
+                });
+
+                child.on('close', (code) => {
+                    logTerminalData(`Process exited with code ${code}\r\n`);
+                });
+
+                commandFound = true;
+            } catch (error) {
+                logTerminalData(`Error trying to execute ${command}: ${error}`);
+            }
+        }
     });
 
-    child.stderr.on('data', (data) => {
-        logTerminalData(data.toString());
-    });
+    if (!commandFound) {
+        logTerminalData("Failed to find a valid Python command ('python' or 'python3').\r\n");
+    }
+}
 
-    child.on('close', (code) => {
-        logTerminalData(`Process exited with code ${code}\r\n`);
-    });
+document.getElementById('start').addEventListener('click', function () {
+    startPythonProcess(startFilePath);
 });
 
-document.getElementById('stop').addEventListener('click', function() {
-  if (child) {
-      kill(child.pid, 'SIGTERM', function(err) {
-          if (err) {
-            logTerminalData('Error stopping the server.\r\n');
-          } else {
-            logTerminalData('Server stopped successfully.\r\n');
-          }
-      });
-  }
+document.getElementById('stop').addEventListener('click', function () {
+    if (child) {
+        kill(child.pid, 'SIGTERM', function (err) {
+            if (err) {
+                logTerminalData('Error stopping the server.\r\n');
+            } else {
+                logTerminalData('Server stopped successfully.\r\n');
+            }
+        });
+    }
 });
 
-document.getElementById('restart').addEventListener('click', function() {
+document.getElementById('restart').addEventListener('click', function () {
     terminal.write('Server restarting...\r\n');
 
     if (child) {
-        kill(child.pid, 'SIGTERM', function(err) {
+        kill(child.pid, 'SIGTERM', function (err) {
             if (err) {
                 terminal.write('Error stopping the server.\r\n');
             } else {
                 terminal.write('Server stopped successfully.\r\n');
 
                 setTimeout(() => {
-                    child = spawn('python', [startFilePath], { windowsHide: os.platform() === 'win32' });
-
-                    child.stdout.on('data', (data) => {
-                        logTerminalData(data.toString());
-                    });
-
-                    child.stderr.on('data', (data) => {
-                        logTerminalData(data.toString());
-                    });
-
-                    child.on('close', (code) => {
-                        logTerminalData(`Process exited with code ${code}\r\n`);
-                    });
+                    startPythonProcess(startFilePath);
                 }, 1000);
             }
         });
@@ -128,7 +147,7 @@ function logTerminalData(data) {
     terminal.write(data)
 }
 
-document.getElementById('saveLogs').addEventListener('click', function() {
+document.getElementById('saveLogs').addEventListener('click', function () {
     let timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     let logFileName = `server-logs-${timestamp}.txt`;
 
@@ -211,10 +230,10 @@ function loadSettings() {
     if (fs.existsSync(settingsFilePath)) {
         const settingsData = fs.readFileSync(settingsFilePath, 'utf-8');
         const settings = JSON.parse(settingsData);
-        
+
         document.getElementById('port-server').value = settings.serverPort;
         document.getElementById('port-live').value = settings.livePort;
-        
+
         updateServerStatus(settings.serverPort, 'server-status');
         updateServerStatus(settings.livePort, 'live-status');
         startStatusUpdateLoop(settings.serverPort, 'server-status', settings.livePort, 'live-status');
@@ -230,19 +249,19 @@ function startStatusUpdateLoop(serverPort, serverStatusID, livePort, liveStatusI
         clearInterval(serverStatusUpdateInterval);
         clearInterval(liveStatusUpdateInterval);
     }
-    
+
     try {
         document.getElementById("serverPortNum").textContent = `PORT ${serverPort}`;
         document.getElementById("livePortNum").textContent = `PORT ${livePort}`;
-    } catch(errror) {
+    } catch (errror) {
         // console.log(error);
     }
 
-    serverStatusUpdateInterval = setInterval(function() {
+    serverStatusUpdateInterval = setInterval(function () {
         updateServerStatus(serverPort, serverStatusID);
     }, 3000);
 
-    liveStatusUpdateInterval = setInterval(function() {
+    liveStatusUpdateInterval = setInterval(function () {
         updateServerStatus(livePort, liveStatusID);
     }, 3000);
 }

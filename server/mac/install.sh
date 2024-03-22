@@ -1,5 +1,5 @@
 #! /bin/bash
-py -m pip install poetry
+python -m pip install poetry
 cd ..
 cd skybrush-server
 
