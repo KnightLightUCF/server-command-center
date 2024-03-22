@@ -1,5 +1,6 @@
 #! /bin/bash
 py -m pip install poetry
+cd ..
 cd skybrush-server
 
 # Check if skybrush.jsonc exists in the current directory
