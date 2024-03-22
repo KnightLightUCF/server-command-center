@@ -10,7 +10,4 @@ else
     echo "skybrush.jsonc exists."
 fi
 
-cd .venv
-cd bin
-source activate
-python3 skybrushd
+poetry run skybrushd
