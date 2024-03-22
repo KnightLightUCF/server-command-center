@@ -1,0 +1,19 @@
+{
+  "name": "guiserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^29.1.5"
+  },
+  "dependencies": {
+    "@xterm/xterm": "^5.4.0",
+    "tree-kill": "^1.2.2"
+  }
+}

@@ -1,0 +1,181 @@
+#container {
+    display: flex;
+    flex-direction: column; /* Stack terminal and controls vertically */
+    align-items: center; /* Center-align children horizontally */
+    font-family: 'Segoe UI', 'San Francisco', sans-serif; /* Change the font */
+
+}
+
+#terminal-container {
+    /* width: 80%; Initial width; can be resized */
+    min-width: 800px; /* Minimum width for the terminal */
+    height: 400px; /* Adjust height as necessary */
+    background-color: black;
+    overflow: hidden; /* Hide overflow */
+    margin-bottom: 20px; /* Increase space between terminal and buttons */
+    padding-bottom: 10px; /* Add padding at the bottom */
+    padding-left: 10px;
+    resize: horizontal; /* Allow horizontal resizing */
+    border: 1px solid #ccc; /* Optional: adds a border for better visibility */
+}
+
+#controls {
+    display: flex;
+    flex-direction: row; /* Align buttons in a row */
+    justify-content: center; /* Center-align buttons horizontally */
+    gap: 10px; /* Space between buttons */
+    width: 80%; /* Match the width of the terminal container for alignment */
+}
+
+button {
+    padding: 10px 20px; /* Increase padding for larger buttons */
+    flex-grow: 1; /* Ensure buttons expand to fill the container */
+    margin: 0 5px; /* Optional: adds margin between buttons */
+}
+
+.status-indicator-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    width: 100%; /* Adjust as needed */
+    margin-bottom: 20px;
+}
+
+.status-indicator {
+    background-color: black;
+    border-radius: 7px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.status-text {
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-box {
+    padding: 5px 10px;
+    border-radius: 7px;
+    color: white;
+    font-weight: bold;
+    /* opacity: 0.7; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Styles for specific statuses */
+.open {
+    background-color: #008000;
+}
+
+.stopped {
+    background-color: #ff0000;
+}
+
+.xterm * {
+    user-select: none !important; /* Overrides any other settings */
+}
+
+#settings-gear {
+    cursor: pointer;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 24px;
+}
+
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto; /* Further reduced for alignment with the close button */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 30%;
+}
+
+.modal-content h2 {
+    margin-top: 0; /* Align title with close button */
+    margin-bottom: 20px; /* Add some space below the title */
+}
+
+.setting-row {
+    display: flex;
+    align-items: center; /* Align items vertically */
+    margin-bottom: 20px;
+}
+
+.setting-row label {
+    flex: 0 0 150px; /* Fixed width for label */
+    line-height: 1.5; /* Reduced line height */
+    margin-right: 10px; /* Space between label and input */
+}
+
+.setting-row input {
+    flex: 1; /* Take up remaining space */
+    max-width: 125px; /* Maximum width for input */
+}
+
+#close-modal {
+    cursor: pointer;
+    font-size: 28px;
+    float: right;
+}
+
+#close-modal:hover {
+    cursor: pointer;
+}
+
+@media (min-width: 768px) { /* Adjust the breakpoint to your needs */
+    .modal-content {
+      margin: 10% auto; /* Vertical centering */
+      max-width: 300px; /* Or any fixed max-width you prefer */
+    }
+  }
+
+  .status-indicator-title {
+    color: black;
+    font-size: 16px; /* Adjust font size as needed */
+    font-weight: bold; /* Adjust font weight as needed */
+    text-align: center; /* Center the title */
+    margin-bottom: 10px; /* Space between the title and the indicator */
+}
+
+.status-indicator-wrapper {
+    display: flex;
+    flex-direction: column; /* Arrange title and status vertically */
+    align-items: center; /* Center-align the title and status box */
+}
+
+  
+.status-link {
+    color: blue;
+    text-decoration: underline;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#appVersion {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    padding: 5px 10px;
+    font-size: 14px;
+    color: #666;
+}
+

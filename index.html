@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Skybrush Server Command Center - KnightLight</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" href="node_modules/@xterm/xterm/css/xterm.css" />
+    <script src="node_modules/@xterm/xterm/lib/xterm.js"></script>
+</head>
+<body>
+
+    <div id="container">
+
+        <div class="status-indicator-container">
+            <div class="status-indicator-wrapper">
+                <div class="status-indicator-title">
+                    <a id="serverLink" target="_blank" class="status-link hidden">Skybrush Server</a>
+                </div>
+                <div class="status-indicator">
+                    <span class="status-text" id="serverPortNum">PORT 5000</span>
+                    <span class="status-box" id="server-status">STOPPED</span>
+                </div>
+            </div>
+
+            <div class="status-indicator-wrapper">
+                <div class="status-indicator-title">
+                    <a id="liveLink" target="_blank" class="status-link hidden">Skybrush Live</a>
+                </div>
+                <div class="status-indicator">
+                    <span class="status-text" id="livePortNum">PORT 8080</span>
+                    <span class="status-box" id="live-status">STOPPED</span>
+                </div>
+            </div>   
+        </div>
+
+        <div id="terminal-container"></div>
+        <div id="controls">
+            <div id="button-wrapper">
+                <button id="start">Start Server</button>
+                <button id="stop">Stop Server</button>
+                <button id="restart">Restart Server</button>
+                <button id="saveLogs">Save Logs</button>
+            </div>
+            <div id="settings-gear">&#9881;</div> <!-- Settings icon -->
+        </div>
+        <span id="appVersion"></span>
+
+        <div id="settings-modal" class="modal">
+            <div class="modal-content">
+                <span id="close-modal">&times;</span> <!-- Close button -->
+                <h2>Settings</h2>
+                <div class="setting-row">
+                    <label for="port-server">Server Port:</label>
+                    <input type="number" id="port-server" name="port-server" disabled>
+                </div>
+                <div class="setting-row">
+                    <label for="port-live">Skybrush Live Port:</label>
+                    <input type="number" id="port-live" name="port-live">
+                </div>
+            </div>
+        </div>
+        
+
+
+    </div>
+    <script src="render.js"></script>
+    <script src="gui.js"></script>
+</body>
+</html>
