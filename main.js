@@ -44,8 +44,14 @@ function createWindow() {
           // Destroy the window if there's an error
           win.destroy();
         } else {
-          const pythonProcesses = children.filter(child => child.COMMAND === 'python.exe');
-          const killPromises = pythonProcesses.map(process => {
+
+          let childProcesses = children.filter(child => child.COMMAND === 'python.exe');
+
+          if (process.platform === 'darwin') {
+            childProcesses = children
+          }
+
+          let killPromises = childProcesses.map(process => {
             return new Promise((resolve, reject) => {
               kill(process.PID, 'SIGTERM', (error) => {
                 if (error) {

@@ -7,7 +7,7 @@ cd skybrush-server
 
 :: Check if skybrush.jsonc exists
 IF EXIST "skybrush.jsonc" (
-    echo skybrush.jsonc exists HELLO.
+    echo skybrush.jsonc exists.
 ) ELSE (
     echo Creating skybrush.jsonc...
     (
