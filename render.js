@@ -6,7 +6,7 @@ const net = require('net');
 const os = require('os');
 const fs = require('fs');
 const { ipcRenderer } = require('electron');
-
+const http = require('http');
 
 let terminal = new Terminal({
     rendererType: 'dom',
@@ -187,18 +187,38 @@ function openFileLocation(filePath) {
 }
 
 function checkPortStatus(port, statusID, callback) {
-    let server = net.createServer();
-    server.listen(port, '127.0.0.1');
-    server.on('listening', () => {
-        server.close();
-        callback('free', statusID);
-    });
-    server.on('error', (err) => {
-        if (err.code === 'EADDRINUSE') {
+    let requestOptions = {
+        hostname: 'localhost',
+        port: port,
+        timeout: 5000, // 5 seconds timeout
+    };
+
+    let req = http.get(requestOptions, (res) => {
+        let acceptableStatusCodes = statusID === 'server-status' ? [200, 302] : [200];
+
+        if (acceptableStatusCodes.includes(res.statusCode)) {
             callback('in use', statusID);
         } else {
+            console.log(`Received status code ${res.statusCode} for port ${port}`);
+            callback('free', statusID);
+        }
+        res.resume(); // Consume response data to free up memory
+    });
+
+    req.on('error', (e) => {
+        if (e.code === 'ECONNREFUSED') {
+            console.log("Connection refused")
+            callback('free', statusID);
+        } else {
+            console.error(`Error while checking port ${port}: ${e.message}`);
             callback('error', statusID);
         }
+    });
+
+    req.on('timeout', () => {
+        console.error(`Request to port ${port} timed out`);
+        req.abort(); // Abort the request on timeout
+        callback('error', statusID);
     });
 }
 
