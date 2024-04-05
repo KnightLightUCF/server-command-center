@@ -68,7 +68,7 @@ function checkVersion() {
 
   function downloadLatestVersion() {
       const zipUrl = `https://github.com/KnightLightUCF/server-command-center/archive/main.zip`;
-      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'app-update-'));
+      const tempDir = fs.mkdtempSync(path.join(app.getPath('temp'), 'app-update-')); // Create temporary directory in system's temp directory
       const zipPath = path.join(tempDir, 'latest.zip');
       console.log(tempDir)
 
@@ -93,7 +93,8 @@ function checkVersion() {
               // Close the Electron app
               app.quit();
               // Replace the application files with the latest version
-              replaceFiles(tempDir, app.getAppPath());
+              // console.log(path.)
+              replaceFiles(tempDir, path.dirname(__dirname));
 
               // Relaunch the Electron app
               app.relaunch();
@@ -108,9 +109,14 @@ function checkVersion() {
       try {
           // Get the list of files from the temporary directory
           const tempFiles = await readdirAsync(tempDir);
+          console.log(tempDir)
+          console.log(tempFiles)
+          console.log(appDir)
+
+          const filesToReplace = tempFiles.filter(file => file !== '.DS_Store');
 
           // Loop through each file in the temporary directory
-          for (const file of tempFiles) {
+          for (const file of filesToReplace) {
               const tempFilePath = path.join(tempDir, file);
               const appFilePath = path.join(appDir, file);
 
