@@ -25,7 +25,6 @@ function checkVersion() {
   const localVersion = localPackageJson.version;
 
   console.log(localVersion);
-  let updateRequired = false;
 
   const url = `https://raw.githubusercontent.com/KnightLightUCF/server-command-center/main/package.json`;
 
