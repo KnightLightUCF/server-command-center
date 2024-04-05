@@ -100,7 +100,7 @@ function checkVersion() {
 
               // Relaunch the Electron app
               app.relaunch();
-              app.exit();
+              // app.exit();
 
           })
           .catch(error => {
