@@ -6,6 +6,8 @@ const net = require('net');
 const os = require('os');
 const fs = require('fs');
 const { ipcRenderer } = require('electron');
+const fetch = require('node-fetch');
+
 
 
 let terminal = new Terminal({
