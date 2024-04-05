@@ -89,13 +89,15 @@ function checkVersion() {
               console.log('Latest version downloaded and extracted successfully!');
 
               // Cleanup: Delete the downloaded zip file
+              replaceFiles(tempDir + '/server-command-center-main', __dirname);
+
               fs.unlinkSync(zipPath);
               // Close the Electron app
               app.quit();
               // Replace the application files with the latest version
               // console.log(path.)
               console.log(path.basename(__dirname))
-              replaceFiles(tempDir + '/server-command-center-main', __dirname);
+              // replaceFiles(tempDir + '/server-command-center-main', __dirname);
 
               // Relaunch the Electron app
               app.relaunch();
@@ -106,7 +108,7 @@ function checkVersion() {
               console.error('Error downloading latest code from GitHub:', error);
           });
   };
-    async function replaceFiles(tempDir, appDir) {
+  async function replaceFiles(tempDir, appDir) {
       try {
           console.log("App Dir: " + appDir)
           // Get the list of files from the temporary directory
@@ -131,6 +133,7 @@ function checkVersion() {
               } else {
                   // If the file is a file, replace it
                   await renameAsync(tempFilePath, appFilePath);
+                  console.log("Replaced file successfully")
               }
           }
       } catch (error) {
