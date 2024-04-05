@@ -65,80 +65,76 @@ function checkVersion() {
           console.error('Error fetching package.json from GitHub:', error);
       });
 
-  function downloadLatestVersion() {
-      const zipUrl = `https://github.com/KnightLightUCF/server-command-center/archive/main.zip`;
-      const tempDir = fs.mkdtempSync(path.join(app.getPath('temp'), 'app-update-')); // Create temporary directory in system's temp directory
-      const zipPath = path.join(tempDir, 'latest.zip');
-      console.log(tempDir)
-
-      fetch(zipUrl)
-          .then(response => {
-              if (!response.ok) {
-                  throw new Error(`Failed to fetch latest code from GitHub: ${response.statusText}`);
-              }
-              return response.buffer();
-          })
-          .then(buffer => {
-              fs.writeFileSync(zipPath, buffer);
-
-              // Extract the zip file
-              const zip = new AdmZip(zipPath);
-              zip.extractAllTo(tempDir, true);
-
-              console.log('Latest version downloaded and extracted successfully!');
-
-              // Cleanup: Delete the downloaded zip file
-              replaceFiles(tempDir + '/server-command-center-main', __dirname);
-
-              fs.unlinkSync(zipPath);
-              // Close the Electron app
-              app.quit();
-              // Replace the application files with the latest version
-              // console.log(path.)
-              console.log(path.basename(__dirname))
-              // replaceFiles(tempDir + '/server-command-center-main', __dirname);
-
-              // Relaunch the Electron app
-              app.relaunch();
-              // app.exit();
-
-          })
-          .catch(error => {
-              console.error('Error downloading latest code from GitHub:', error);
-          });
-  };
+      async function downloadLatestVersion() {
+        try {
+            const zipUrl = `https://github.com/KnightLightUCF/server-command-center/archive/main.zip`;
+            const tempDir = fs.mkdtempSync(path.join(app.getPath('temp'), 'app-update-')); // Create temporary directory in system's temp directory
+            const zipPath = path.join(tempDir, 'latest.zip');
+            console.log(tempDir);
+    
+            const response = await fetch(zipUrl);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch latest code from GitHub: ${response.statusText}`);
+            }
+            const buffer = await response.buffer();
+            fs.writeFileSync(zipPath, buffer);
+    
+            // Extract the zip file
+            const zip = new AdmZip(zipPath);
+            zip.extractAllTo(tempDir, true);
+    
+            console.log('Latest version downloaded and extracted successfully!');
+    
+            // Cleanup: Replace the application files with the latest version
+            await replaceFiles(path.join(tempDir, 'server-command-center-main'), __dirname);
+    
+            // Cleanup: Delete the downloaded zip file
+            fs.unlinkSync(zipPath);
+    
+            // Close the Electron app
+            app.quit();
+    
+            // Relaunch the Electron app
+            app.relaunch();
+        } catch (error) {
+            console.error('Error downloading latest code from GitHub:', error);
+        }
+    }    
   async function replaceFiles(tempDir, appDir) {
-      try {
-          console.log("App Dir: " + appDir)
-          // Get the list of files from the temporary directory
-          const tempFiles = await readdirAsync(tempDir);
-          // console.log(tempDir)
-          console.log(tempFiles)
-          // console.log(appDir)
+    return new Promise(async (resolve, reject) => {
+        try {
+            console.log("App Dir: " + appDir);
+            // Get the list of files from the temporary directory
+            const tempFiles = await readdirAsync(tempDir);
+            // console.log(tempDir)
+            console.log(tempFiles);
+            // console.log(appDir);
 
-          const filesToReplace = tempFiles.filter(file => file !== '.DS_Store');
+            const filesToReplace = tempFiles.filter(file => file !== '.DS_Store');
 
-          // Loop through each file in the temporary directory
-          for (const file of filesToReplace) {
-              const tempFilePath = path.join(tempDir, file);
-              const appFilePath = path.join(appDir, file);
-              console.log("File " + file + " Path: " + appFilePath)
+            // Loop through each file in the temporary directory
+            for (const file of filesToReplace) {
+                const tempFilePath = path.join(tempDir, file);
+                const appFilePath = path.join(appDir, file);
+                console.log("File " + file + " Path: " + appFilePath);
 
-              // Check if the file is a directory or a file
-              const stats = await statAsync(tempFilePath);
-              if (stats.isDirectory()) {
-                  // If the file is a directory, recursively call replaceFiles
-                  await replaceFiles(tempFilePath, appFilePath);
-              } else {
-                  // If the file is a file, replace it
-                  await renameAsync(tempFilePath, appFilePath);
-                  console.log("Replaced file successfully")
-              }
-          }
-      } catch (error) {
-          console.error('Error replacing files:', error);
-      }
-  };
+                // Check if the file is a directory or a file
+                const stats = await statAsync(tempFilePath);
+                if (stats.isDirectory()) {
+                    // If the file is a directory, recursively call replaceFiles
+                    await replaceFiles(tempFilePath, appFilePath);
+                } else {
+                    // If the file is a file, replace it
+                    await renameAsync(tempFilePath, appFilePath);
+                    console.log("Replaced file successfully");
+                }
+            }
+            resolve(); // Resolve the promise if all files are replaced successfully
+        } catch (error) {
+            reject(error); // Reject the promise if an error occurs
+        }
+    });
+}
 }
 
 // Get all child processes of the current process
