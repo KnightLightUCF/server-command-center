@@ -94,7 +94,8 @@ function checkVersion() {
               app.quit();
               // Replace the application files with the latest version
               // console.log(path.)
-              replaceFiles(tempDir, path.dirname(__dirname));
+              console.log(path.basename(__dirname))
+              replaceFiles(tempDir + '/server-command-center-main', __dirname);
 
               // Relaunch the Electron app
               app.relaunch();
@@ -107,11 +108,12 @@ function checkVersion() {
   };
     async function replaceFiles(tempDir, appDir) {
       try {
+          console.log("App Dir: " + appDir)
           // Get the list of files from the temporary directory
           const tempFiles = await readdirAsync(tempDir);
-          console.log(tempDir)
+          // console.log(tempDir)
           console.log(tempFiles)
-          console.log(appDir)
+          // console.log(appDir)
 
           const filesToReplace = tempFiles.filter(file => file !== '.DS_Store');
 
@@ -119,6 +121,7 @@ function checkVersion() {
           for (const file of filesToReplace) {
               const tempFilePath = path.join(tempDir, file);
               const appFilePath = path.join(appDir, file);
+              console.log("File " + file + " Path: " + appFilePath)
 
               // Check if the file is a directory or a file
               const stats = await statAsync(tempFilePath);
