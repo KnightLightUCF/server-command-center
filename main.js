@@ -50,7 +50,7 @@ function checkVersion() {
                   type: 'info',
                   title: 'Version Mismatch',
                   message: 'The version of the application is out of sync with the latest version on GitHub.',
-                  buttons: ['Continue', 'Download Latest']
+                  buttons: ['Not Now', 'Download Latest']
               }).then(({ response }) => {
                   if (response === 1) {
                       // Download latest version
