@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const psTree = require('ps-tree');
 const kill = require('tree-kill');
 
@@ -32,6 +32,10 @@ function createWindow() {
 
   // Load index.html
   win.loadFile('index.html');
+
+  ipcMain.on('get-app-version', (event) => {
+    event.sender.send('app-version', app.getVersion());
+  });
 
   win.on('close', (event) => {
     // Prevent the window from closing immediately

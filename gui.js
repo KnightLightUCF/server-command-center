@@ -75,4 +75,7 @@ document.getElementById('liveLink').addEventListener('click', (e) => {
     });
 });
 
-document.getElementById('appVersion').innerText = process.env.npm_package_version;
+ipcRenderer.send('get-app-version');
+ipcRenderer.on('app-version', (event, version) => {
+  document.getElementById('appVersion').innerText = version;
+});
