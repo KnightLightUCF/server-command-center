@@ -1,4 +1,5 @@
 ::THIS VERSION IS RAN WHEN WE DON'T HAVE SKYBRUSH INSTALLED
+@echo off
 
 pip install poetry
 cd ..
