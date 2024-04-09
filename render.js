@@ -207,7 +207,7 @@ function checkPortStatus(port, statusID, callback) {
 
     req.on('error', (e) => {
         if (e.code === 'ECONNREFUSED') {
-            console.log("Connection refused")
+            // console.log("Connection refused")
             callback('free', statusID);
         } else {
             console.error(`Error while checking port ${port}: ${e.message}`);
